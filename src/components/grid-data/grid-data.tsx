@@ -25,7 +25,7 @@ function GridData({ columns }: { columns?: any[] }) {
     return (
         <div>
 
-            <div>
+            <div className="d-flex justify-content-end mb-2">
                 <Button variant="primary" onClick={onClickAddButton}>
                     <i className="bi bi-plus-lg"></i> Add
                 </Button>
