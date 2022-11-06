@@ -1,7 +1,7 @@
 import './App.css';
 
 import { Button } from 'react-bootstrap';
-import { Routes, Route } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 // pages
 //import TodoPage from './pages/todo';
 import Dashboard from './pages/dashboard';
@@ -12,10 +12,11 @@ function App() {
 
   return (
     //<div className="App">
+  
     <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/group" element={<GroupPage />} />
-      <Route path="/train" element={<TrainPage />} />
+        <Route path="/group" element={<GroupPage />} />
+        <Route path="/train" element={<TrainPage />} />
+        <Route path="/" element={<Dashboard />} />
     </Routes>
     //</div>
   );

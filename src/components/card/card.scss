@@ -1,0 +1,17 @@
+.card {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 1rem;    
+    
+}
+
+.front {
+    background-color: #BCEAD5;
+}
+.back {
+    background-color: #9ED5C5;
+}
