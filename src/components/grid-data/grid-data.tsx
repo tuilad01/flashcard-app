@@ -35,18 +35,18 @@ function GridData({ columns }: { columns?: any[] }) {
                 <thead>
                     <tr>
                         <th>#</th>
-                        {columns?.map((col) => (
-                            <th>{col.displayName}</th>
+                        {columns?.map((col, index) => (
+                            <th key={`colNameKey_${index}`}>{col.displayName}</th>
                         ))}
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {data.map((gr: any, index: number) => (
-                        <tr>
+                        <tr key={`grRowKey_${index}`}>
                             <td>{index + 1}</td>
-                            {columns?.map((col) => (
-                                <td>{gr[col.name]}</td>
+                            {columns?.map((col, colIndex) => (
+                                <td key={`cellKey_${colIndex}`}>{gr[col.name]}</td>
                             ))}
                             <td>
                                 <DropdownButton id="dropdown-basic-button" title="Actions" variant="success">

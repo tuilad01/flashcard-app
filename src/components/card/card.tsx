@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap"
+import { onClickButtonWithSound } from "../common/onClickButtonWithSound";
 import { onClickWithSound } from "../common/onClickWithSound";
 import './card.scss'
 
@@ -15,8 +16,11 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
             setIsDisabledNextButton(false)
         }
 
-        if (!hasInput)
+        if (!hasInput) {
+            onClickWithSound();
             setIsBack(!isBack);
+        }
+            
     }
     const onClickNext = () => {
         setIsBack(false)
@@ -57,7 +61,7 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
 
 
             <div className='d-flex justify-content-center mt-2'>
-                <Button variant="primary" onClick={_ => onClickWithSound(() => onClickNext())} disabled={isDisabledNextButton}>
+                <Button variant="primary" onClick={_ => onClickButtonWithSound(() => onClickNext())} disabled={isDisabledNextButton}>
                     Next <i className="bi bi-chevron-right"></i>
                 </Button>
             </div>

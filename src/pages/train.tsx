@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import Card from '../components/card/card';
 import Navbar from '../components/navbar/navbar';
-import { onClickWithSound } from '../components/common/onClickWithSound';
+import { onClickButtonWithSound } from '../components/common/onClickButtonWithSound';
 import './train.scss'
 import { data } from './trainData';
 
@@ -31,7 +31,7 @@ function TrainPage() {
                 <Col>
                     <Navbar pageName={pageName} />
 
-                    <Button className="mb-2" variant="danger" onClick={() => onClickWithSound(() => setHasInput(!hasInput))}>
+                    <Button className="mb-2" variant="danger" onClick={() => onClickButtonWithSound(() => setHasInput(!hasInput))}>
                         <i className="bi bi-chat-heart"></i> Toggle
                     </Button>
 
