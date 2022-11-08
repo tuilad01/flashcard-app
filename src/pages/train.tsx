@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import Card from '../components/card/card';
 import Navbar from '../components/navbar/navbar';
@@ -6,22 +6,38 @@ import { onClickButtonWithSound } from '../components/common/onClickButtonWithSo
 import './train.scss'
 import { data } from './trainData';
 
+const groupLocalId = "137a86dc-93d6-442d-a484-ce539b0264c7"
+
 function TrainPage() {
     const pageName = "Train"
     let index = 0;
-    const [flashcard, setFlashcard] = useState({ front: data[index].en, back: data[index].vi, index: index })
+    const [groupData, setGroupData] = useState<[{id: string, name: string, description: string, items: {vi: string, en: string}[]}]>([{ id: "1", name: "test", description: "test", items: [] }])
+    const [flashcard, setFlashcard] = useState({ front: "", back: "", index: index })
     const [hasInput, setHasInput] = useState(false)
-    //console.log(index)
+
+    useEffect(() => {
+        const strGroupLocal = localStorage.getItem(groupLocalId)
+        if (strGroupLocal) {
+            const groupLocal = JSON.parse(strGroupLocal)
+            setGroupData(groupLocal)
+            setFlashcard({ front: groupLocal[0].items[index].vi, back: groupLocal[0].items[index].en, index: index })
+        }
+    }, [])
+
 
     const onClickNext = () => {
 
         //console.log(`nextIndex = ${nextIndex}`)
         setFlashcard(prev => {
-            const nextIndex = prev.index > data.length - 2 ? 0 : prev.index + 1
-            return {
-                front: data[nextIndex].en,
-                back: data[nextIndex].vi,
-                index: nextIndex,
+            const nextIndex = prev.index > groupData[0].items.length - 2 ? 0 : prev.index + 1
+            if (nextIndex >= 0)
+                return {
+                    front: groupData[0].items[nextIndex].en,
+                    back: groupData[0].items[nextIndex].vi,
+                    index: nextIndex,
+                }
+            else {
+                return {...prev}
             }
         })
     }
@@ -35,7 +51,7 @@ function TrainPage() {
                         <i className="bi bi-chat-heart"></i> Toggle
                     </Button>
 
-                    <Card front={flashcard.back} back={flashcard.front} hasInput={hasInput} onNext={onClickNext}></Card>
+                    <Card front={flashcard.front} back={flashcard.back} hasInput={hasInput} onNext={onClickNext}></Card>
 
                     {/* <Form.Control placeholder="enter..." /> */}
 

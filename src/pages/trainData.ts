@@ -23,3 +23,16 @@ export const data = [
     },
 ]
 
+export const seedData = [
+    {
+      "id": "9bd4f649-2aea-45c1-858e-5c88548b4b89",
+      "name": "group test",
+      "description": "group test description",
+      "items": [
+        {
+          "vi": "hello",
+          "en": "xin chao"
+        }
+      ]
+    }
+  ]

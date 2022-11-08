@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, DropdownButton, Dropdown, Modal, Form } from 'react-bootstrap';
 import { onClickButtonWithSound } from '../components/common/onClickButtonWithSound';
 import GridData from '../components/grid-data/grid-data';
 import Navbar from '../components/navbar/navbar';
+import { seedData } from './trainData';
 import './group.scss'
+
+const groupLocalId = "137a86dc-93d6-442d-a484-ce539b0264c7"
 
 const columns = [
     {
@@ -21,19 +24,27 @@ function GroupPage() {
 
     const [show, setShow] = useState(false);
     const [modal, setModal] = useState<{ title: string, type: "import" | "export" }>({ title: "", type: "import" })
+    const [input, setInput] = useState("")
+
+    useEffect(() => {
+        const strGroupLocal = localStorage.getItem(groupLocalId)
+        if (strGroupLocal) {
+            setInput(strGroupLocal)
+        } else {
+            localStorage.setItem(groupLocalId, JSON.stringify(seedData))
+            setInput(JSON.stringify(seedData))
+        }
+    }, [])
 
     const handleClose = () => setShow(false);
     const handleShow = (type: "import" | "export") => {
-        if (type === "import") {
-            // import
-
-        } else {
-            // export
-
-        }
-
         setModal({ title: type, type: type });
         setShow(true);
+    }
+
+    const onSaveChanges = () => {
+        localStorage.setItem(groupLocalId, JSON.stringify(input))
+        setShow(false)
     }
 
     return (
@@ -58,14 +69,13 @@ function GroupPage() {
                     <Modal.Title>{modal.title}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <Form.Control as="textarea" placeholder="Placeholder" rows={6} />
-
+                    <Form.Control as="textarea" rows={6} value={input} onChange={e => setInput(e.currentTarget.value)} placeholder={modal.type} />
                 </Modal.Body>
 
                 <Modal.Footer>
                     {modal.type === "import" &&
                         (
-                            <Button variant="primary" onClick={handleClose}>
+                            <Button variant="primary" onClick={onSaveChanges}>
                                 Save Changes
                             </Button>
                         )
