@@ -28,12 +28,13 @@ function GroupPage() {
 
     useEffect(() => {
         const strGroupLocal = localStorage.getItem(groupLocalId)
-        if (strGroupLocal) {
-            setInput(strGroupLocal)
-        } else {
-            localStorage.setItem(groupLocalId, JSON.stringify(seedData))
-            setInput(JSON.stringify(seedData))
-        }
+        setInput(strGroupLocal ? JSON.parse(strGroupLocal) : "")
+        // if (strGroupLocal) {
+        //     setInput(strGroupLocal)
+        // } else {
+        //     localStorage.setItem(groupLocalId, JSON.stringify(seedData))
+        //     setInput(JSON.stringify(seedData))
+        // }
     }, [])
 
     const handleClose = () => setShow(false);

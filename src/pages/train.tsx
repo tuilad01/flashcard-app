@@ -4,23 +4,33 @@ import Card from '../components/card/card';
 import Navbar from '../components/navbar/navbar';
 import { onClickButtonWithSound } from '../components/common/onClickButtonWithSound';
 import './train.scss'
-import { data } from './trainData';
+//import { data } from './trainData';
 
 const groupLocalId = "137a86dc-93d6-442d-a484-ce539b0264c7"
 
 function TrainPage() {
     const pageName = "Train"
     let index = 0;
-    const [groupData, setGroupData] = useState<[{id: string, name: string, description: string, items: {vi: string, en: string}[]}]>([{ id: "1", name: "test", description: "test", items: [] }])
+    //const [groupData, setGroupData] = useState<[{id: string, name: string, description: string, items: {vi: string, en: string}[]}]>([{ id: "1", name: "test", description: "test", items: [] }])
+    const [sentences, setSentences] = useState<{vi: string, en: string}[]>([])
     const [flashcard, setFlashcard] = useState({ front: "", back: "", index: index })
     const [hasInput, setHasInput] = useState(false)
 
     useEffect(() => {
-        const strGroupLocal = localStorage.getItem(groupLocalId)
-        if (strGroupLocal) {
-            const groupLocal = JSON.parse(strGroupLocal)
-            setGroupData(groupLocal)
-            setFlashcard({ front: groupLocal[0].items[index].vi, back: groupLocal[0].items[index].en, index: index })
+        const strLocal = localStorage.getItem(groupLocalId)
+        if (strLocal) {
+            const sentences = strLocal.replaceAll('\"', '').split("\\n").map(line => {
+                const sentence = line.split(",")
+                return {
+                    en: sentence[0],
+                    vi: sentence[1] ?? ""
+                }
+            })
+            setSentences(sentences)
+            setFlashcard({ front: sentences[index].vi, back: sentences[index].en, index: index })
+            //const groupLocal = JSON.parse(strGroupLocal)
+            //setGroupData(groupLocal)
+            //setFlashcard({ front: groupLocal[0].items[index].vi, back: groupLocal[0].items[index].en, index: index })
         }
     }, [])
 
@@ -29,11 +39,11 @@ function TrainPage() {
 
         //console.log(`nextIndex = ${nextIndex}`)
         setFlashcard(prev => {
-            const nextIndex = prev.index > groupData[0].items.length - 2 ? 0 : prev.index + 1
+            const nextIndex = prev.index > sentences.length - 2 ? 0 : prev.index + 1
             if (nextIndex >= 0)
                 return {
-                    front: groupData[0].items[nextIndex].en,
-                    back: groupData[0].items[nextIndex].vi,
+                    front: sentences[nextIndex].en,
+                    back: sentences[nextIndex].vi,
                     index: nextIndex,
                 }
             else {
