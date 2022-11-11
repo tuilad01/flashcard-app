@@ -27,7 +27,7 @@ function TrainPage() {
                 }
             })
             setSentences(sentences)
-            setFlashcard({ front: sentences[index].vi, back: sentences[index].en, index: index })
+            setFlashcard({ front: sentences[index].en, back: sentences[index].vi, index: index })
             //const groupLocal = JSON.parse(strGroupLocal)
             //setGroupData(groupLocal)
             //setFlashcard({ front: groupLocal[0].items[index].vi, back: groupLocal[0].items[index].en, index: index })
