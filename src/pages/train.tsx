@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import Card from '../components/card/card';
 import Navbar from '../components/navbar/navbar';
 import { onClickButtonWithSound } from '../components/common/onClickButtonWithSound';
