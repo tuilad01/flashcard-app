@@ -51,6 +51,17 @@ function TrainPage() {
             }
         })
     }
+
+    // const enableTypeInput = () => {
+    //     const value = !hasInput
+    //     if (value) {
+    //         // reverse flashcard
+    //         setFlashcard(prev => ({...prev,front: sentences[prev.index].vi, back: sentences[prev.index].en}))
+    //     }
+    //     setHasInput(value)
+    // }
+
+    
     return (
         <Container>
             <Row>

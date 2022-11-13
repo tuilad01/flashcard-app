@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap"
 import { onClickButtonWithSound } from "../common/onClickButtonWithSound";
 import { onClickWithSound } from "../common/onClickWithSound";
@@ -9,6 +9,14 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
     const [isBack, setIsBack] = useState(false);
     const [isDisabledNextButton, setIsDisabledNextButton] = useState(true)
     const [input, setInput] = useState("")
+
+
+    useEffect(() => {
+        if(hasInput) {
+            setIsBack(true)
+            setIsDisabledNextButton(true)
+        }        
+    }, [hasInput])
 
     const onClickFlipCard = (_: any) => {
         if (isDisabledNextButton && !hasInput) {
@@ -23,7 +31,11 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
             
     }
     const onClickNext = () => {
-        setIsBack(false)
+        if (hasInput) {
+            setIsBack(true)
+        } else {
+            setIsBack(false)
+        }
         setIsDisabledNextButton(true)
         setInput("")
         onNext && onNext()
@@ -33,7 +45,7 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
         const value = event.currentTarget.value
         setInput(value)
 
-        if (hasInput && value.toLowerCase().trim() === back.toLowerCase().trim()) {
+        if (hasInput && value.toLowerCase().trim() === front.toLowerCase().trim()) {
             setIsDisabledNextButton(false)
         } else{
             setIsDisabledNextButton(true)
@@ -46,6 +58,7 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
 
         return classes;
     }
+
 
     return (
         <div>
