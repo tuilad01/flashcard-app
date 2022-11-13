@@ -19,7 +19,7 @@ function TrainPage() {
     useEffect(() => {
         const strLocal = localStorage.getItem(groupLocalId)
         if (strLocal) {
-            const sentences = strLocal.replaceAll('\"', '').split("\\n").map(line => {
+            const sentences = strLocal.replace(/\"/gm, '').split("\\n").map(line => {
                 const sentence = line.split(",")
                 return {
                     en: sentence[0],
