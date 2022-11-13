@@ -3,8 +3,8 @@ import { Button, Dropdown, DropdownButton, Modal, Form } from 'react-bootstrap';
 import Table from 'react-bootstrap/Table';
 //import { mockData } from './mockdata';
 import { v4 as uuidv4 } from 'uuid';
+import { groupService } from '../../services/group';
 
-const groupLocalId1 = "F4558EC9-9AA1-468E-BBB0-DA44321A6D40"
 
 function GridData({ columns }: { columns?: any[] }) {
     // data list 
@@ -13,8 +13,8 @@ function GridData({ columns }: { columns?: any[] }) {
     const [form, setForm] = useState({ id: "", name: "", description: "", items: "" });
 
     useEffect(() => {
-        const arrGroup = getDataLocal(groupLocalId1);
-        setData(arrGroup);
+        const groups = groupService.getList()
+        setData(groups);
     }, [])
 
 
@@ -42,24 +42,20 @@ function GridData({ columns }: { columns?: any[] }) {
                 // TODO: group existed
                 // for updating a group
                 const element = data.find(d => d.id === form.id)
-                if (element) {
+                if (element) {                    
                     element.name = form.name;
                     element.description = form.description;
                     element.items = form.items;                    
                     const newArrGroup = [...data]
-                    setDataLocal(groupLocalId1, newArrGroup)
+                    groupService.update(element.id, element)
                     setData(newArrGroup);
                 }
 
             } else {
                 // group is not existed
                 // for adding a new group
-                const arrGroup = getDataLocal(groupLocalId1);
-                const newGroup = { ...form, id: uuidv4() }
-
-                arrGroup.push(newGroup)
-                setDataLocal(groupLocalId1, arrGroup)
-                setData(arrGroup);
+                const newGroup = groupService.add(form)
+                setData(prev => [...prev, newGroup]);
             }
         } catch (error: any) {
             console.error(error);
@@ -71,27 +67,11 @@ function GridData({ columns }: { columns?: any[] }) {
         setForm({ id: "", name: "", description: "", items: "" })
     }
 
-    const getDataLocal = (key: string): any[] => {
-        const str = localStorage.getItem(key)
-        if (str) {
-            return JSON.parse(str)
-        }
-
-        return []
-    }
-
-    const setDataLocal = (key: string, obj: any) => {
-        localStorage.setItem(key, JSON.stringify(obj))
-    }
-
     const onDelete = (index: number) => {
         if (window.confirm("Are you sure?")) {
             const elementRemoved = data.splice(index, 1);
-            const arrGroup = getDataLocal(groupLocalId1)
-
-            const newArrGroup = arrGroup.filter(gr => gr.id !== elementRemoved[0].id)
-            setDataLocal(groupLocalId1, newArrGroup)
-            setData(newArrGroup);
+            groupService.remove(elementRemoved[0].id)         
+            setData(prev => prev.filter(d => d.id !== elementRemoved[0].id));
         }
     }
 

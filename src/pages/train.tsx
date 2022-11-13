@@ -5,9 +5,9 @@ import Navbar from '../components/navbar/navbar';
 import { onClickButtonWithSound } from '../components/common/onClickButtonWithSound';
 import './train.scss'
 //import { data } from './trainData';
+import { groupService } from '../services/group';
 
-const groupLocalId = "137a86dc-93d6-442d-a484-ce539b0264c7"
-
+const groupIndex = 0
 function TrainPage() {
     const pageName = "Train"
     let index = 0;
@@ -17,20 +17,11 @@ function TrainPage() {
     const [hasInput, setHasInput] = useState(false)
 
     useEffect(() => {
-        const strLocal = localStorage.getItem(groupLocalId)
-        if (strLocal) {
-            const sentences = strLocal.replace(/\"/gm, '').split("\\n").map(line => {
-                const sentence = line.split(",")
-                return {
-                    en: sentence[0],
-                    vi: sentence[1] ?? ""
-                }
-            })
-            setSentences(sentences)
-            setFlashcard({ front: sentences[index].en, back: sentences[index].vi, index: index })
-            //const groupLocal = JSON.parse(strGroupLocal)
-            //setGroupData(groupLocal)
-            //setFlashcard({ front: groupLocal[0].items[index].vi, back: groupLocal[0].items[index].en, index: index })
+        const groups = groupService.getList();
+        if (groups[groupIndex] && groups[groupIndex].items) {
+            const groupItemSentences = groupService.parseItem(groups[groupIndex].items)
+            setSentences(groupItemSentences)
+            setFlashcard({ front: groupItemSentences[index].en, back: groupItemSentences[index].vi, index: index })
         }
     }, [])
 
