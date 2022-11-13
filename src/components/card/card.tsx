@@ -52,6 +52,15 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
         }
     }
 
+    const onEnter = (e: any) => {
+        if (e.key === "Enter") {
+            if (!isDisabledNextButton) {
+                onClickButtonWithSound()
+                onClickNext()
+            }
+        }
+    }
+
     const classNames = () => {
         let classes = "card";
         classes += isBack ? " front" : " back";
@@ -68,7 +77,7 @@ function Card({ front, back, onNext, hasInput = false }: { front: string, back: 
 
             {hasInput && (
                 <div className="my-1">
-                    <Form.Control value={input} onChange={onChangeInput}></Form.Control>
+                    <Form.Control value={input} onChange={onChangeInput} onKeyDown={onEnter}></Form.Control>
                 </div>
             )}
 
