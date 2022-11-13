@@ -1,5 +1,5 @@
 export const localStore = {
-    getArrayDataLocal: (key: string): any[] => {
+    getArrayDataLocal: (key: string): any[] | any => {
         const str = localStorage.getItem(key)
         if (str) {
             return JSON.parse(str)

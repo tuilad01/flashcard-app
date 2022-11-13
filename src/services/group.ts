@@ -5,10 +5,10 @@ const key = "F4558EC9-9AA1-468E-BBB0-DA44321A6D40"
 
 
 export const groupService = {
-    getList: function() {
+    getList: function(): any[] {
         return localStore.getArrayDataLocal(key)
     },
-    getById: function(id: string) {
+    getById: function(id: string): any {
         const groups = this.getList();
         const group = groups.find(gr => gr.id === id)
         return group
