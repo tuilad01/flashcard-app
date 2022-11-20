@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Container, Row, Col, Button, ListGroup } from 'react-bootstrap';
 import Card from '../components/card/card';
 import Navbar from '../components/navbar/navbar';
+import TimerAlert from '../components/timer/timer';
 import { onClickButtonWithSound } from '../components/common/onClickButtonWithSound';
 import './train.scss'
 //import { data } from './trainData';
 import { groupService } from '../services/group';
+import moment from 'moment';
 
-const groupIndex = 0
 function TrainPage() {
     const pageName = "Train"
     let index = 0;
@@ -21,35 +22,33 @@ function TrainPage() {
     useEffect(() => {
         const localGroups = groupService.getList();
         setGroups(localGroups)
-        // if (selectedGroupId) {
-        //     const group = localGroups.find(gr => gr.id === selectedGroupId)
-
-        // }
-        // const group = 
-        // if (local) {
-        //     const groupItemSentences = groupService.parseItem(localGroups[groupIndex].items)
-        //     setSentences(groupItemSentences)
-        //     setFlashcard({ front: groupItemSentences[index].en, back: groupItemSentences[index].vi, index: index })
-        // }
 
     }, [])
 
 
     const onClickNext = () => {
+        const nextIndex = flashcard.index > sentences.length - 2 ? 0 : flashcard.index + 1
 
-        //console.log(`nextIndex = ${nextIndex}`)
-        setFlashcard(prev => {
-            const nextIndex = prev.index > sentences.length - 2 ? 0 : prev.index + 1
-            if (nextIndex >= 0)
-                return {
-                    front: sentences[nextIndex].en,
-                    back: sentences[nextIndex].vi,
-                    index: nextIndex,
-                }
-            else {
-                return { ...prev }
+        // the train process is completed, set a timer for next train
+        // if (nextIndex === 0) {
+        //     const group = groups.find(gr => gr.id === selectedGroupId)
+        //     if (group) {
+        //         group.level = group.level && group.level > 1 ? 1 : group.level + 1;
+        //         groupService.update(group.id, group)
+        //     }
+        // }
+
+        // go to next sentence or repeat
+        if (nextIndex >= 0) {
+            const nextFlashcard = {
+                front: sentences[nextIndex].en,
+                back: sentences[nextIndex].vi,
+                index: nextIndex,
             }
-        })
+
+            setFlashcard(nextFlashcard)
+        }
+
     }
 
     const onSelectGroup = (id: string) => {
@@ -88,9 +87,11 @@ function TrainPage() {
                     ) :
                         (
                             <>
+                                <TimerAlert date={moment().add(10, "second").toDate()}/>
+
                                 <ListGroup>
-                                    {groups.map(gr => (
-                                        <ListGroup.Item action onClick={e => onSelectGroup(gr.id)}>
+                                    {groups.map((gr, index) => (
+                                        <ListGroup.Item key={`grItem_${index}`} action onClick={e => onSelectGroup(gr.id)}>
                                             {gr.name}
                                         </ListGroup.Item>
                                     ))}

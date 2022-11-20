@@ -7,6 +7,7 @@ import { Route, Routes } from 'react-router-dom';
 import Dashboard from './pages/dashboard';
 import GroupPage from './pages/group';
 import TrainPage from './pages/train';
+import SettingPage from './pages/setting';
 
 function App() {
 
@@ -14,9 +15,10 @@ function App() {
     //<div className="App">
   
     <Routes>
+        <Route path="/" element={<Dashboard />} />
         <Route path="/group" element={<GroupPage />} />
         <Route path="/train" element={<TrainPage />} />
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/settings" element={<SettingPage />} />
     </Routes>
     //</div>
   );

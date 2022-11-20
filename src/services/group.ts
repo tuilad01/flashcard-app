@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { localStore } from "./localstore";
+import moment from "moment"
 
 const key = "F4558EC9-9AA1-468E-BBB0-DA44321A6D40"
 
@@ -37,6 +38,7 @@ export const groupService = {
             oldGroup.name = group.name;
             oldGroup.description = group.description;
             oldGroup.items = group.items;
+            oldGroup.level = group.level;
             localStore.setDataLocal(key, groups)
         }        
     },
@@ -51,6 +53,19 @@ export const groupService = {
             }
         })
         return sentences
+    },
+    getNextTrainTime: function(): Date {
+        const groups = this.getList();
+        groups.sort((gr1, gr2) => {
+            if (gr1.lastTrainDate && gr2.lastTrainDate) {
+                const lastTrainDate1 = new Date(gr1.lastTrainDate).getTime();
+                const lastTrainDate2 = new Date(gr2.lastTrainDate).getTime();
+                return lastTrainDate1 - lastTrainDate2;
+            }
+            return 0;
+        })
+        // return the last element in array
+        return groups[groups.length -1]
     }
 
 }
