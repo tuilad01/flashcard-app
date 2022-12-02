@@ -8,6 +8,7 @@ import Dashboard from './pages/dashboard';
 import GroupPage from './pages/group';
 import TrainPage from './pages/train';
 import SettingPage from './pages/setting';
+import DailyTranslationPage from './pages/daily-translation-page';
 
 function App() {
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Dashboard />} />
         <Route path="/group" element={<GroupPage />} />
         <Route path="/train" element={<TrainPage />} />
+        <Route path="/daily-translation" element={<DailyTranslationPage />} />
         <Route path="/settings" element={<SettingPage />} />
     </Routes>
     //</div>

@@ -8,6 +8,7 @@ import './train.scss'
 //import { data } from './trainData';
 import { groupService } from '../services/group';
 import moment from 'moment';
+import Train from '../components/train/train-component';
 
 function TrainPage() {
     const pageName = "Train"
@@ -77,17 +78,11 @@ function TrainPage() {
                     <Navbar pageName={pageName} />
 
                     {selectedGroupId ? (
-                        <>
-                            <Button className="mb-2" variant="danger" onClick={() => onClickButtonWithSound(() => setHasInput(!hasInput))}>
-                                <i className="bi bi-chat-heart"></i> Toggle
-                            </Button>
-
-                            <Card front={flashcard.front} back={flashcard.back} hasInput={hasInput} onNext={onClickNext}></Card>
-                        </>
+                        <Train dataSource={sentences.map(s => ({ front: s.en, back: s.vi }))}></Train>
                     ) :
                         (
                             <>
-                                <TimerAlert date={moment().add(10, "second").toDate()}/>
+                                {/* <TimerAlert date={moment().add(10, "second").toDate()} /> */}
 
                                 <ListGroup>
                                     {groups.map((gr, index) => (
