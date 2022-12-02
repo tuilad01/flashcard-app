@@ -6,12 +6,14 @@ import { dailyTranslationService, DailyTranslation } from "../services/daily-tra
 import { DailyTranslationSchema } from "../datastore/schemas/daily-translation-schema";
 import Calendar from "../components/calendar/calendar-component";
 import Month, { compare2Date } from "../components/calendar/month-component";
+import Train from "../components/train/train-component";
 
 
 
 function DailyTranslationPage() {
     const [listDailyTrans, setListDailyTrans] = useState<DailyTranslation[]>([])
-    const [action, setAction] = useState<{ name: "list" | "add" | "edit", dailyTrans?: DailyTranslation, isSubmitable?: boolean }>({ name: "list", isSubmitable: true })
+    const [action, setAction] = useState<{ name: "list" | "add" | "edit" | "train", selectedDailyTrans?: DailyTranslation, isSubmitable?: boolean }>({ name: "list", isSubmitable: true })
+    const [selectingDateForPracticing, setSelectingDateForPracticing] = useState<{ value: boolean }>({ value: false })
 
     const now = new Date();
 
@@ -57,13 +59,20 @@ function DailyTranslationPage() {
     const onClickDay = (day: Date) => {
         const existedDailyTrans = listDailyTrans.find(d => d.createdAt && compare2Date(d.createdAt, day) === 0)
         if (existedDailyTrans?.id) {
-            setAction({ name: "edit", dailyTrans: existedDailyTrans })
+            // is for practicng or not
+            if (selectingDateForPracticing.value) {
+                setAction({ name: "train", selectedDailyTrans: existedDailyTrans })
+                setSelectingDateForPracticing({ value: false })
+            } else {
+                setAction({ name: "edit", selectedDailyTrans: existedDailyTrans })
+            }
+
 
         } else {
-            const addAction : any = { name: "add", isSubmitable: true }
+            const addAction: any = { name: "add", isSubmitable: true }
             if (compare2Date(now, day) !== 0) {
                 addAction.isSubmitable = false
-            }            
+            }
             setAction(addAction)
         }
     }
@@ -106,17 +115,58 @@ function DailyTranslationPage() {
         return listDailyTrans.length
     }
 
+    const onToggleTrain = () => {
+        setSelectingDateForPracticing({ value: !selectingDateForPracticing.value })
+    }
+
 
     const onRendarByAction = () => {
         if (action.name === "add") {
             return <DailyTranslationForm onCancel={onCancel} onSubmit={onSubmit} hasSubmitButton={action.isSubmitable}></DailyTranslationForm>
         } else if (action.name === "edit") {
-            return <DailyTranslationForm dailyTranslation={action.dailyTrans} onCancel={onCancel} onSubmit={onSubmit}></DailyTranslationForm>
+            return <DailyTranslationForm dailyTranslation={action.selectedDailyTrans} onCancel={onCancel} onSubmit={onSubmit}></DailyTranslationForm>
+        } else if (action.name === "train") {
+            let data = []
+            if (action.selectedDailyTrans?.conclude) {
+                const lines = action.selectedDailyTrans.conclude.split("\n")
+                const data = lines.map(line => {
+                    const conclude = line.split("|")
+                    const front = conclude[0]?.trim()
+                    const back = conclude[1]?.trim()
+                    return {
+                        front: front,
+                        back: back
+                    }
+
+                });
+
+                return (
+                    <>
+                        <Button variant="primary" onClick={() => setAction({ name: "list" })}>
+                            Back to month
+                        </Button>
+
+                        <div className="mt-2">
+                            <Train dataSource={data}></Train>
+                        </div>
+                    </>
+                )
+            }
+
         }
 
         return (
             <>
                 <h1>Day {countTrainedDaysToNow()}</h1>
+                <div className="d-flex">
+                    <Button variant={selectingDateForPracticing.value ? "danger" : "primary"} onClick={() => onToggleTrain()}>
+                        Practice
+                    </Button>
+
+                    <span className="ml-3 mt-2">{selectingDateForPracticing.value ? "Please select a day" : ""}</span>
+                </div>
+
+
                 <Month month={now.getMonth()} year={now.getFullYear()} onClickDay={onClickDay}></Month>
             </>
         )
