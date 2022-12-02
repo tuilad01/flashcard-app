@@ -57,24 +57,24 @@ function DailyTranslationPage() {
     // }
 
     const onClickDay = (day: Date) => {
+        
         const existedDailyTrans = listDailyTrans.find(d => d.createdAt && compare2Date(d.createdAt, day) === 0)
         if (existedDailyTrans?.id) {
             // is for practicng or not
             if (selectingDateForPracticing.value) {
                 setAction({ name: "train", selectedDailyTrans: existedDailyTrans })
-                setSelectingDateForPracticing({ value: false })
             } else {
                 setAction({ name: "edit", selectedDailyTrans: existedDailyTrans })
             }
-
-
         } else {
             const addAction: any = { name: "add", isSubmitable: true }
             if (compare2Date(now, day) !== 0) {
                 addAction.isSubmitable = false
             }
             setAction(addAction)
+
         }
+        setSelectingDateForPracticing({ value: false })
     }
 
     const onCancel = () => {
