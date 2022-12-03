@@ -95,7 +95,7 @@ function DailyTranslationPage() {
                         dt.updatedAt = dailyTrans.updatedAt
                     }
 
-                    setListDailyTrans(prev => [...prev, dailyTrans])
+                    setListDailyTrans([...listDailyTrans])
                     alert("update succesfully");
                 }
             })
