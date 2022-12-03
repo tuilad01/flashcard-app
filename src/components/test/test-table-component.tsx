@@ -1,6 +1,7 @@
 import { Action } from 'history';
 import React, { useEffect, useState } from 'react';
 import { Table, Button } from 'react-bootstrap'
+import TablePagination, { Pagination } from './test-table-pagination-component';
 
 export type Column = {
     name: string
@@ -14,15 +15,27 @@ export type FormProps = {
     onSubmit?: (form: any) => void
 }
 
+export type DataSource = {
+    data: Data[]
+    total: number
+}
+
 export type Data = {
     [key: string]: any
     id: string | number
-
 }
 
 
-function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm }: { dataSource: Data[], columns: Column[], renderForm?: (formProps: FormProps) => JSX.Element, onDelete?: (selectedData: any) => boolean, onSubmitForm?: (form: any) => Data }) {
-    const [data, setData] = useState<Data[]>(dataSource)
+
+
+const getTotalPage = (total: number, pageSize: number): number => {
+    return Math.ceil(total / pageSize)
+}
+
+
+function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm, onChangePage, pageNumber, pageSizes }: { dataSource: DataSource, columns: Column[], renderForm?: (formProps: FormProps) => JSX.Element, onDelete?: (selectedData: any) => boolean, onSubmitForm?: (form: any) => Data, onChangePage?: (pagination: any) => DataSource, pageNumber?: number, pageSizes?: number[] }) {
+    const [data, setData] = useState<Data[]>(dataSource.data)
+
     const [action, setAction] = useState<{ name: "list" | "add" | "edit", selectedData?: any }>({ name: 'list' })
 
 
@@ -39,51 +52,68 @@ function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm }: 
     }
 
     const onCancelInForm = () => {
-        setAction({name: "list"})
+        setAction({ name: "list" })
     }
 
     const onSubmitInForm = (form: any) => {
         if (onSubmitForm) {
             const newData = onSubmitForm(form)
-            if (action.name === "add") {
-                // add a new data in the data state
-                setData([...data, newData])
-                setAction({name: "list"})
-            } else {
-                // update the data in the data state
-                const prevData = data.find(d => d.id === newData.id)
-                if (prevData) {
-                    for (const key in prevData) {
-                        if (Object.prototype.hasOwnProperty.call(prevData, key)) {
-                            //const element = ;
-                            prevData[key] = newData[key]
+            if (newData) {
+                if (action.name === "add") {
+                    // add a new data in the data state
+                    setData([newData, ...data])
+                    setAction({ name: "list" })
+                } else {
+                    // update the data in the data state
+                    const prevData = data.find(d => d.id === newData.id)
+                    if (prevData) {
+                        for (const key in prevData) {
+                            if (Object.prototype.hasOwnProperty.call(prevData, key)) {
+                                //const element = ;
+                                prevData[key] = newData[key]
+                            }
                         }
-                    }
 
-                    setData([...data])
-                    alert("updated successfully")
+                        setData([...data])
+                        alert("updated successfully")
+                    }
                 }
-            }            
+            } else {
+                alert("cannot submit the form!")
+            }
+
         }
+    }
+
+    const onChangePageInPagination = (pagination: Pagination): number => {
+        if (onChangePage) {
+            const newDataSource = onChangePage(pagination)
+            if (newDataSource) {
+                setData(newDataSource.data)
+                return newDataSource.total
+            }
+        }
+
+        return 0
     }
 
     const renderByAction = (): JSX.Element => {
 
         if (renderForm) {
             if (action.name === "add") {
-                return renderForm({onCancel: onCancelInForm, onSubmit: onSubmitInForm})
+                return renderForm({ onCancel: onCancelInForm, onSubmit: onSubmitInForm })
             } else if (action.name === "edit") {
-                return renderForm({onCancel: onCancelInForm, onSubmit: onSubmitInForm, data: action.selectedData})
+                return renderForm({ onCancel: onCancelInForm, onSubmit: onSubmitInForm, data: action.selectedData })
             }
         }
 
 
         return (
             <>
-                <Button variant="primary" onClick={() => setAction({name: "add"})}>
+                <Button variant="primary" onClick={() => setAction({ name: "add" })}>
                     Add
                 </Button>
-                <Table striped bordered hover>
+                <Table striped bordered hover responsive>
                     <thead>
                         <tr>
                             <th>#</th>
@@ -109,7 +139,7 @@ function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm }: 
                                         <Button variant="danger" onClick={() => onDeleteData(record)}>
                                             Delete
                                         </Button>
-                                        <Button variant="warning" className="ml-1" onClick={() => setAction({name: "edit", selectedData: record})}>
+                                        <Button variant="warning" className="ml-1" onClick={() => setAction({ name: "edit", selectedData: record })}>
                                             Edit
                                         </Button>
                                     </td>
@@ -119,6 +149,8 @@ function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm }: 
 
                     </tbody>
                 </Table>
+
+                <TablePagination total={dataSource.total} onChangePage={onChangePageInPagination} pageNumber={pageNumber} pageSizes={pageSizes}></TablePagination>
             </>
         )
     }

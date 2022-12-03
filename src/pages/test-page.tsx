@@ -1,29 +1,27 @@
-import TestTable, { Column, FormProps, Data } from "../components/test/test-table-component";
+import TestTable, { Column, FormProps, Data, DataSource } from "../components/test/test-table-component";
 import { v4 as uuidv4 } from 'uuid'
 import TestForm from "../components/test/test-form-component";
 import { useState } from "react";
+import { Pagination } from "../components/test/test-table-pagination-component";
 
-const dataInitialization: Data[] = [
-    {
-        id: 1,
-        name: "item 1",
-        description: "abc"
-    },
-    {
-        id: 2,
-        name: "item 2",
+const initializeData = () => {    
+    const data: Data[] = []
+    for (let index = 0; index < 100; index++) {
+        data.push({
+            id: index + 1,
+            name: `item ${index + 1}`
+        })
+        
     }
-    ,
-    {
-        id: 3,
-        name: "item 3",
-    }
-    ,
-    {
-        id: 4,
-        name: "item 4",
-    }
-]
+
+    return data
+}
+
+const queryData = (pageNumber: number, pageSize: number, data: any[]) => {
+    const index = (pageNumber - 1) * pageSize
+
+    return data.slice(index, index + pageSize)
+}
 
 const columns: Column[] = [
     {
@@ -38,9 +36,14 @@ const columns: Column[] = [
     },
 ]
 
-
+const defaultPagination = {
+    pageNumber: 2,
+    pageSize: 10,
+    pageSizes: [10,20,30,50]
+}
 
 function TestPage() {
+    const dataInitialization = initializeData()
 
     const renderForm = (formProps: FormProps): JSX.Element => {
 
@@ -76,10 +79,19 @@ function TestPage() {
         return form
     }
 
+    const onChangePage = (pagination: Pagination): DataSource => {
+        //call API get new data for pagination
+        const newArrayData = queryData(pagination.pageNumber, pagination.pageSize, dataInitialization)
+
+        return {
+            data: newArrayData,
+            total: dataInitialization.length
+        }
+    }
 
     return (
         <>
-            <TestTable dataSource={dataInitialization} columns={columns} renderForm={renderForm} onSubmitForm={onSubmit} onDelete={onDelete} />
+            <TestTable dataSource={{data: queryData(defaultPagination.pageNumber, defaultPagination.pageSize, dataInitialization), total: dataInitialization.length}} columns={columns} renderForm={renderForm} onSubmitForm={onSubmit} onDelete={onDelete} onChangePage={onChangePage} pageNumber={2} pageSizes={defaultPagination.pageSizes}/>
         </>
     );
 }
