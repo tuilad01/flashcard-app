@@ -25,6 +25,10 @@ export type Data = {
     id: string | number
 }
 
+export type Query = {
+    name: string
+    value: string
+}
 
 
 
@@ -33,11 +37,24 @@ const getTotalPage = (total: number, pageSize: number): number => {
 }
 
 
-function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm, onChangePage, pageNumber, pageSizes }: { dataSource: DataSource, columns: Column[], renderForm?: (formProps: FormProps) => JSX.Element, onDelete?: (selectedData: any) => boolean, onSubmitForm?: (form: any) => Data, onChangePage?: (pagination: any) => DataSource, pageNumber?: number, pageSizes?: number[] }) {
+
+
+function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm, onChangePage, pageNumber = 1, pageSizes = [10,20,50] }: { dataSource: DataSource, columns: Column[], renderForm?: (formProps: FormProps) => JSX.Element, onDelete?: (selectedData: any) => boolean, onSubmitForm?: (form: any) => Data, onChangePage?: (pagination: any, query?: Query[]) => DataSource, pageNumber?: number, pageSizes?: number[] }) {
+    const defaultPagination: Pagination = {
+        pageNumber: pageNumber,
+        pageSize: pageSizes[0],
+        pageSizes: pageSizes,
+        total: dataSource.total,
+        pages: []
+    }
+
     const [data, setData] = useState<Data[]>(dataSource.data)
 
     const [action, setAction] = useState<{ name: "list" | "add" | "edit", selectedData?: any }>({ name: 'list' })
 
+    const [query, setQuery] = useState<Query[]>([])
+
+    const [paginationProps, setPaginationProps] = useState<Pagination>(defaultPagination)
 
     const onDeleteData = (selectedData: Data) => {
         if (window.confirm("Are you sure?")) {
@@ -87,10 +104,15 @@ function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm, on
 
     const onChangePageInPagination = (pagination: Pagination): number => {
         if (onChangePage) {
-            const newDataSource = onChangePage(pagination)
+            const newDataSource = onChangePage(pagination, query)
             if (newDataSource) {
+                //setTotal
                 setData(newDataSource.data)
-                return newDataSource.total
+                setPaginationProps({...paginationProps, total: newDataSource.total, pageNumber: pagination.pageNumber, pageSize: pagination.pageSize})
+
+
+                // return total number of records to calculate pages in the pagination component 
+                //return newDataSource.total
             }
         }
 
@@ -150,7 +172,7 @@ function TestTable({ dataSource, columns, renderForm, onDelete, onSubmitForm, on
                     </tbody>
                 </Table>
 
-                <TablePagination total={dataSource.total} onChangePage={onChangePageInPagination} pageNumber={pageNumber} pageSizes={pageSizes}></TablePagination>
+                <TablePagination total={paginationProps.total} onChangePage={onChangePageInPagination} pageNumber={paginationProps.pageNumber} pageSize={paginationProps.pageSize} pageSizes={paginationProps.pageSizes}></TablePagination>
             </>
         )
     }

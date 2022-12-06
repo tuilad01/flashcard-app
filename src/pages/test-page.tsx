@@ -4,14 +4,14 @@ import TestForm from "../components/test/test-form-component";
 import { useState } from "react";
 import { Pagination } from "../components/test/test-table-pagination-component";
 
-const initializeData = () => {    
+const initializeData = () => {
     const data: Data[] = []
     for (let index = 0; index < 100; index++) {
         data.push({
             id: index + 1,
             name: `item ${index + 1}`
         })
-        
+
     }
 
     return data
@@ -39,7 +39,7 @@ const columns: Column[] = [
 const defaultPagination = {
     pageNumber: 2,
     pageSize: 10,
-    pageSizes: [10,20,30,50]
+    pageSizes: [10, 20, 30, 50]
 }
 
 function TestPage() {
@@ -56,9 +56,17 @@ function TestPage() {
         )
     }
 
-    const onDelete = (data: any): boolean => {
-        // call API to delete data 
-        return true;
+    const onDelete = (data: Data): boolean => {
+        // call API to delete data
+        const index = dataInitialization.findIndex(d => d.id === data.id)
+        if (index >= 0) {
+            dataInitialization.splice(index, 1)
+
+            // return true to delete data in table
+            return true;
+        }
+
+        return false;
     }
 
     const onSubmit = (form: any): Data => {
@@ -66,8 +74,8 @@ function TestPage() {
             // update
             // call API to update data
             // return updated data.       
-            
-            
+
+
         } else {
             // add
             // call API to add data        
@@ -91,7 +99,7 @@ function TestPage() {
 
     return (
         <>
-            <TestTable dataSource={{data: queryData(defaultPagination.pageNumber, defaultPagination.pageSize, dataInitialization), total: dataInitialization.length}} columns={columns} renderForm={renderForm} onSubmitForm={onSubmit} onDelete={onDelete} onChangePage={onChangePage} pageNumber={2} pageSizes={defaultPagination.pageSizes}/>
+            <TestTable dataSource={{ data: queryData(defaultPagination.pageNumber, defaultPagination.pageSize, dataInitialization), total: dataInitialization.length }} columns={columns} renderForm={renderForm} onSubmitForm={onSubmit} onDelete={onDelete} onChangePage={onChangePage} pageNumber={2} pageSizes={defaultPagination.pageSizes} />
         </>
     );
 }

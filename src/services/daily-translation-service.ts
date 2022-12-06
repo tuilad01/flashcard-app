@@ -50,9 +50,9 @@ export const dailyTranslationService = {
         return data
     },
     add: async function (form: any) {
-        try {            
+        try {
             const dailyTrans = new DailyTranslation()
-            dailyTrans.id =  uuidv4();
+            dailyTrans.id = uuidv4();
             dailyTrans.vi = form.vi
             dailyTrans.myself = form.myself
             dailyTrans.google = form.google
@@ -81,6 +81,32 @@ export const dailyTranslationService = {
                 return result;
 
             }
+        } catch (error) {
+            console.error(error)
+        }
+
+        return null;
+    },
+    remove: async function (id: string) {
+        try {
+            const oldDailyTranslation = await dailyTranslationSchema.find({ id: id });
+            if (oldDailyTranslation) {
+                
+                const result = await dailyTranslationSchema.remove({ id: id })
+                return result;
+
+            }
+        } catch (error) {
+            console.error(error)
+        }
+
+        return 0;
+    },
+    import: async function (dailyTranslation: any) {
+        try {
+            delete dailyTranslation.key
+            const newDailyTranslation = await dailyTranslationSchema.add(dailyTranslation)
+            return newDailyTranslation;
         } catch (error) {
             console.error(error)
         }

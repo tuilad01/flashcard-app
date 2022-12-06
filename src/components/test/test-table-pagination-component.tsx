@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Form, Pagination } from 'react-bootstrap'
 
 export type Pagination = {
     pageNumber: number
     pageSize: number
+    pageSizes: number[]
     total: number,
     pages: number[],
     totalPage?: number
@@ -37,24 +38,37 @@ const calcPages = (pagination: Pagination) => {
     return pagination
 }
 
-function TablePagination({ total, onChangePage, pageNumber = 1, pageSizes = [10,20,50] }: { total: number, onChangePage?: (pagination: Pagination) => number, pageNumber?: number, pageSizes?: number[] }) {
-
+function TablePagination({ total, onChangePage, pageNumber = 1, pageSize = 10, pageSizes = [10, 20, 50] }: { total: number, onChangePage?: (pagination: Pagination) => void, pageNumber?: number, pageSize?: number, pageSizes?: number[] }) {
     const defaultPagination: Pagination = {
         pageNumber: pageNumber,
-        pageSize: pageSizes[0],
+        pageSize: pageSize,
+        pageSizes: pageSizes,
         total: total,
         pages: []
     }
     const [pagination, setPagination] = useState<Pagination>(calcPages(defaultPagination))
+    const [sizes, setSizes] = useState<number[]>(defaultPagination.pageSizes)
+
+    useEffect(() => {
+        setPagination(calcPages({ ...pagination, pageNumber: pageNumber, total: total, pageSize: pageSize }))
+    }, [total, pageNumber, pageSize])
+
+    useEffect(() => {
+        if (pageSizes.length > 0) {
+            setPagination(calcPages({ ...pagination, pageSize: pageSizes[0] }))
+            setSizes(pageSizes)
+        }
+    }, [pageSizes])
 
     const onClickPage = (page: number) => {
         const totalPage = pagination.totalPage || 0
         if (page !== pagination.pageNumber && page > 0 && page < totalPage + 1) {
             if (onChangePage) {
-                const newTotal = onChangePage({ ...pagination, pageNumber: page })
-                if (newTotal > 0) {
-                    setPagination(calcPages({ ...pagination, pageNumber: page, total: newTotal }))
-                }
+                onChangePage({ ...pagination, pageNumber: page })
+                //const newTotal = onChangePage({ ...pagination, pageNumber: page })
+                // if (newTotal > 0) {
+                //     setPagination(calcPages({ ...pagination, pageNumber: page, total: newTotal }))
+                // }
             }
         }
     }
@@ -64,10 +78,11 @@ function TablePagination({ total, onChangePage, pageNumber = 1, pageSizes = [10,
 
         if (size) {
             if (onChangePage) {
-                const newTotal = onChangePage({ ...pagination, pageNumber: 1, pageSize: size })
-                if (newTotal > 0) {
-                    setPagination(calcPages({ ...pagination, pageNumber: 1, pageSize: size, total: newTotal }))
-                }
+                onChangePage({ ...pagination, pageNumber: 1, pageSize: size })
+                // const newTotal = onChangePage({ ...pagination, pageNumber: 1, pageSize: size })
+                // if (newTotal > 0) {
+                //     setPagination(calcPages({ ...pagination, pageNumber: 1, pageSize: size, total: newTotal }))
+                // }
             }
         }
     }
@@ -102,9 +117,9 @@ function TablePagination({ total, onChangePage, pageNumber = 1, pageSizes = [10,
                 </Pagination>
                 <div>
                     <Form.Select value={pagination.pageSize} onChange={onChangePageSize}>
-                        {pageSizes.map((size: number) => {
+                        {sizes.map((size: number) => {
                             return (
-                                <option value={size}>{size}</option>
+                                <option key={`pageSizeKey_${size}`} value={size}>{size}</option>
                             )
                         })}
                     </Form.Select>
